@@ -10,9 +10,6 @@ package main
 import "C"
 
 import (
-	"fmt"
-	"log"
-	"math"
 	"runtime"
 	"strconv"
 	"sync"
@@ -77,12 +74,6 @@ func TracyMessageLC(msg string, color uint32) {
 	C.GoTracyMessageLC(cgomsg, C.uint(color))
 }
 
-/*
-func TracyMessageLC(msg string, color uint32) {
-	cgomsg := C.CString(msg)
-	C.GoTracyMessageLC(cgomsg, C.uint(color))
-}*/
-
 func TracyFrameMark() {
 	C.GoTracyFrameMark()
 }
@@ -144,6 +135,7 @@ func otherThread() {
 	}
 }
 
+/*
 func main() {
 
 	TracySetThreadName("mainThread")
@@ -190,4 +182,4 @@ func main() {
 
 	}
 
-}
+}*/
