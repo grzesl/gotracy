@@ -16,25 +16,57 @@ https://jmeubank.github.io/tdm-gcc/download/
 
 # Example of use
 
+    package main
+
+    import (
+        "time"
+
+        "github.com/grzesl/gotracy"
+    )
+
     func exampleFunction() {
-        TracySetThreadName("exampleFunction")
+        gotracy.TracySetThreadName("exampleFunction")
         for {
-            ido := TracyZoneBegin("TEST", 0xF0F0FA)
+            ido := gotracy.TracyZoneBegin("TEST", 0xF0F0FA)
             time.Sleep(time.Millisecond * 1500)
-            TracyZoneValue(ido, 1500)
+            gotracy.TracyZoneValue(ido, 1500)
             time.Sleep(time.Millisecond * 500)
-            TracyZoneValue(ido, 500)
-            TracyMessageLC("MESSAGE FROM TEST ZONE", 0xFF0F0F)
-            TracyZoneEnd(ido)
+            gotracy.TracyZoneValue(ido, 500)
+            gotracy.TracyMessageLC("MESSAGE FROM TEST ZONE", 0xFF0F0F)
+            gotracy.TracyZoneEnd(ido)
             time.Sleep(time.Second * 3)
-            TracyFrameMarkName("thread")
-            }
+            gotracy.TracyFrameMarkName("thread")
         }
+    }
+
+    func main() {
+        exampleFunction()
+    }
+
 
 Example output is similar to:
 
 ![Tracy](/images/tracy_example.png)
 
+# Currently suported functions
+    func TracySetThreadName(name string) 
+    func TracyZoneBegin(name string, color uint32) int 
+    func TracyZoneEnd(c int) 
+    func TracyZoneValue(c int, value int64) 
+    func TracyZoneText(c int, text string)
+    func TracyMessageL(msg string) 
+    func TracyMessageLC(msg string, color uint32)
+    func TracyFrameMark() 
+    func TracyFrameMarkName(name string) 
+    func TracyFrameMarkStart(name string)
+    func TracyFrameMarkEnd(name string) 
+    func TracyPlotFloat(name string, val float32) 
+    func TracyPlotDouble(name string, val float64) 
+    func TracyPlotInt(name string, val int) 
+    func TracyMessageAppinfo(name string) 
+
+# Other screenshots
+![Tracy](/images/tracy_sin.png)
 
 # License 
 Library is MIT licensed

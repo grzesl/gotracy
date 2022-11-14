@@ -1,4 +1,4 @@
-package gotracy
+package tracy
 
 /*
 #cgo CXXFLAGS: -DTRACY_ENABLE -D_WIN32_WINNT=0x0602 -DWINVER=0x0602
@@ -16,11 +16,28 @@ import (
 	"time"
 )
 
+var tracyStringsMap map[string]*C.char = make(map[string]*C.char)
+var allocStringMutex sync.Mutex
+
+func allocString(text string) *C.char {
+
+	allocStringMutex.Lock()
+	defer allocStringMutex.Unlock()
+
+	val, ok := tracyStringsMap[text]
+	if ok {
+		return val
+	}
+
+	cgotext := C.CString(text)
+	tracyStringsMap[text] = cgotext
+	return cgotext
+}
+
 func TracySetThreadName(name string) {
 	runtime.LockOSThread()
 
-	cgoname := C.CString(name)
-	C.GoTracySetThreadName(cgoname)
+	C.GoTracySetThreadName(allocString(name))
 }
 
 var tracyZoneBeginMutex sync.Mutex
@@ -33,45 +50,33 @@ func TracyZoneBegin(name string, color uint32) int {
 	pc, filename, line, _ := runtime.Caller(1)
 	funcname := runtime.FuncForPC(pc).Name()
 
-	cgoname := C.CString(name)
-	cgofunc := C.CString(funcname)
-	cgofilename := C.CString(filename)
-
-	ret := C.GoTracyZoneBegin(cgoname, cgofunc, cgofilename, C.uint(line), C.uint(color))
-	//defer C.free(unsafe.Pointer(cgoname))
-	//defer C.free(unsafe.Pointer(cgofunc))
-	//defer C.free(unsafe.Pointer(cgofilename))
+	ret := C.GoTracyZoneBegin(allocString(name), allocString(funcname),
+		allocString(filename), C.uint(line), C.uint(color))
 
 	return int(ret)
 }
 
 func TracyZoneEnd(c int) {
 	str := strconv.Itoa(c)
-	cgostr := C.CString(str)
-	C.GoTracyZoneEnd(cgostr)
+	C.GoTracyZoneEnd(allocString(str))
 }
 
 func TracyZoneValue(c int, value int64) {
 	str := strconv.Itoa(c)
-	cgostr := C.CString(str)
-	C.GoTracyZoneValue(cgostr, C.uint64_t(value))
+	C.GoTracyZoneValue(allocString(str), C.uint64_t(value))
 }
 
 func TracyZoneText(c int, text string) {
 	str := strconv.Itoa(c)
-	cgostr := C.CString(str)
-	cgotext := C.CString(text)
-	C.GoTracyZoneText(cgostr, cgotext)
+	C.GoTracyZoneText(allocString(str), allocString(text))
 }
 
 func TracyMessageL(msg string) {
-	cgomsg := C.CString(msg)
-	C.GoTracyMessageL(cgomsg)
+	C.GoTracyMessageL(allocString(msg))
 }
 
 func TracyMessageLC(msg string, color uint32) {
-	cgomsg := C.CString(msg)
-	C.GoTracyMessageLC(cgomsg, C.uint(color))
+	C.GoTracyMessageLC(allocString(msg), C.uint(color))
 }
 
 func TracyFrameMark() {
@@ -79,38 +84,31 @@ func TracyFrameMark() {
 }
 
 func TracyFrameMarkName(name string) {
-	cgoname := C.CString(name)
-	C.GoTracyFrameMarkName(cgoname)
+	C.GoTracyFrameMarkName(allocString(name))
 }
 
 func TracyFrameMarkStart(name string) {
-	cgoname := C.CString(name)
-	C.GoTracyFrameMarkStart(cgoname)
+	C.GoTracyFrameMarkStart(allocString(name))
 }
 
 func TracyFrameMarkEnd(name string) {
-	cgoname := C.CString(name)
-	C.GoTracyFrameMarkEnd(cgoname)
+	C.GoTracyFrameMarkEnd(allocString(name))
 }
 
 func TracyPlotFloat(name string, val float32) {
-	cgoname := C.CString(name)
-	C.GoTracyPlotFloat(cgoname, C.float(val))
+	C.GoTracyPlotFloat(allocString(name), C.float(val))
 }
 
 func TracyPlotDouble(name string, val float64) {
-	cgoname := C.CString(name)
-	C.GoTracyPlotDoublet(cgoname, C.double(val))
+	C.GoTracyPlotDoublet(allocString(name), C.double(val))
 }
 
 func TracyPlotInt(name string, val int) {
-	cgoname := C.CString(name)
-	C.GoTracyPlotInt(cgoname, C.int(val))
+	C.GoTracyPlotInt(allocString(name), C.int(val))
 }
 
 func TracyMessageAppinfo(name string) {
-	cgoname := C.CString(name)
-	C.GoTracyMessageAppinfo(cgoname)
+	C.GoTracyMessageAppinfo(allocString(name))
 }
 
 var mutex sync.Mutex
@@ -145,7 +143,7 @@ func main() {
 
 	for {
 		//ZoneScoped()
-		//TracyFrameMarkStart("mThread")
+
 		id := TracyZoneBegin("BLABLA", 0xFF00FF)
 
 		time.Sleep(time.Nanosecond * 100)
@@ -154,7 +152,10 @@ func main() {
 		TracyZoneValue(id2, 100)
 		TracyZoneText(id2, "To jest ważna informacja...")
 
+		TracyFrameMarkStart("sin(x)")
+		time.Sleep(time.Nanosecond * 100)
 		TracyPlotDouble("sin", math.Sin(float64(i)/10))
+		TracyFrameMarkEnd("sin(x)")
 		//TracyMessageLC("To jest ważna informacja: " + strconv.Itoa(id), 0xFF3344)
 
 		time.Sleep(time.Nanosecond * 100)
