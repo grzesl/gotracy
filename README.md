@@ -4,12 +4,12 @@ https://github.com/wolfpld/tracy
 
 Note: Library curently works only on Windows.
 
-# Quick start
+# Quick start - Windows
 To install library just run commands:
 
 >go get github.com/grzesl/gotracy
 
-To commpile library you need installed gcc, compiler wich i prefer is placed below:
+To commpile library you need installed gcc compiler. I prefer one placed below:
 
 https://jmeubank.github.io/tdm-gcc/download/
 
@@ -19,6 +19,8 @@ https://jmeubank.github.io/tdm-gcc/download/
     package main
 
     import (
+        "math"
+        "strconv"
         "time"
 
         "github.com/grzesl/gotracy"
@@ -26,22 +28,32 @@ https://jmeubank.github.io/tdm-gcc/download/
 
     func exampleFunction() {
         gotracy.TracySetThreadName("exampleFunction")
-        for {
-            ido := gotracy.TracyZoneBegin("TEST", 0xF0F0FA)
-            time.Sleep(time.Millisecond * 1500)
-            gotracy.TracyZoneValue(ido, 1500)
-            time.Sleep(time.Millisecond * 500)
-            gotracy.TracyZoneValue(ido, 500)
-            gotracy.TracyMessageLC("MESSAGE FROM TEST ZONE", 0xFF0F0F)
-            gotracy.TracyZoneEnd(ido)
-            time.Sleep(time.Second * 3)
-            gotracy.TracyFrameMarkName("thread")
+        for i := 0.0; i < math.Pi; i += 0.1 {
+
+            zoneid := gotracy.TracyZoneBegin("Calculating Sin", 0xF0F0F0)
+
+            time.Sleep(time.Millisecond * 150)
+            gotracy.TracyZoneValue(zoneid, 150)
+            time.Sleep(time.Millisecond * 50)
+            gotracy.TracyZoneText(zoneid, "Sleep 50")
+
+            gotracy.TracyFrameMarkStart("Calculating sin(x)")
+            sin := math.Sin(i)
+            gotracy.TracyFrameMarkEnd("Calculating sin(x)")
+
+            gotracy.TracyMessageLC("Sin(x) = "+strconv.FormatFloat(sin, 'E', -1, 64), 0xFF0F0F)
+            gotracy.TracyPlotDouble("sin(x)", sin)
+
+            gotracy.TracyZoneEnd(zoneid)
+
+            gotracy.TracyFrameMark()
         }
     }
 
     func main() {
         exampleFunction()
     }
+
 
 
 Example output is similar to:
