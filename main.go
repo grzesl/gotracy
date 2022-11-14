@@ -1,4 +1,4 @@
-package main
+package gotracy
 
 /*
 #cgo CXXFLAGS: -DTRACY_ENABLE -D_WIN32_WINNT=0x0602 -DWINVER=0x0602
