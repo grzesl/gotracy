@@ -1,4 +1,4 @@
-package tracy
+package gotracy
 
 /*
 #cgo CXXFLAGS: -DTRACY_ENABLE -D_WIN32_WINNT=0x0602 -DWINVER=0x0602
@@ -57,18 +57,15 @@ func TracyZoneBegin(name string, color uint32) int {
 }
 
 func TracyZoneEnd(c int) {
-	str := strconv.Itoa(c)
-	C.GoTracyZoneEnd(allocString(str))
+	C.GoTracyZoneEnd(C.int(c))
 }
 
 func TracyZoneValue(c int, value int64) {
-	str := strconv.Itoa(c)
-	C.GoTracyZoneValue(allocString(str), C.uint64_t(value))
+	C.GoTracyZoneValue(C.int(c), C.uint64_t(value))
 }
 
 func TracyZoneText(c int, text string) {
-	str := strconv.Itoa(c)
-	C.GoTracyZoneText(allocString(str), allocString(text))
+	C.GoTracyZoneText(C.int(c), allocString(text))
 }
 
 func TracyMessageL(msg string) {
@@ -183,4 +180,5 @@ func main() {
 
 	}
 
-}*/
+}
+*/

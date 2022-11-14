@@ -2,14 +2,14 @@
 This project is helper binding library. It allow run Tracy Client in  GoLang projects. Whole library is based on client/server code wersion 0.9 avaliable on:
 https://github.com/wolfpld/tracy
 
-Note: Linbraruy curently works only on Windows.
+Note: Library curently works only on Windows.
 
 # Quick start
 To install library just run commands:
 
 >go get github.com/grzesl/gotracy
 
-To commppile library you need installed gcc, compiler wich i prefer is placed below:
+To commpile library you need installed gcc, compiler wich i prefer is placed below:
 
 https://jmeubank.github.io/tdm-gcc/download/
 

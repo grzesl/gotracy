@@ -14,10 +14,10 @@ struct TracyZoneData
     TracyCZoneCtx ctx;  
 };
 
-std::map<std::string, TracyZoneData*> TracyCZoneCtxMap;
+std::map<int, TracyZoneData*> TracyCZoneCtxMap;
 int TracyCZoneCtxCounter = 0;
 
-TracyZoneData* GetZoneContext(std::string c)
+TracyZoneData* GetZoneContext(int c)
 {
     auto search = TracyCZoneCtxMap.find(c);
 
@@ -33,19 +33,19 @@ TracyZoneData* GetZoneContext(std::string c)
    
 }
 
-void SetZoneContext(std::string c, TracyZoneData *data)
+void SetZoneContext(int c, TracyZoneData *data)
 {
     TracyCZoneCtxMap[c] = data;
 }
 
-void DelZoneContext(std::string c)
+void DelZoneContext(int c)
 {
     auto it = TracyCZoneCtxMap.find(c);
     if(it!=TracyCZoneCtxMap.end())
         TracyCZoneCtxMap.erase(it);
 }
 
-int IsZoneContextExist(std::string c)
+int IsZoneContextExist(int c)
 {
     auto search = TracyCZoneCtxMap.find(c);
 
@@ -62,8 +62,7 @@ void GoTracySetThreadName(const char*name)
 int GoTracyZoneBegin(const char*name,const char *function,const char*file, uint32_t line, uint32_t color)
 {
     TracyCZoneCtxCounter++;
-    std::string s = std::to_string(TracyCZoneCtxCounter);
-    TracyZoneData *data = GetZoneContext(s);
+    TracyZoneData *data = GetZoneContext(TracyCZoneCtxCounter);
     data->ctx = TracyCZoneCtx {};
     data->loc = TracyCZoneLocation {};
     data->loc.name = name;
@@ -71,46 +70,30 @@ int GoTracyZoneBegin(const char*name,const char *function,const char*file, uint3
     data->loc.file = file;
     data->loc.line = line;
     data->loc.color = color;
-
     data->ctx = ___tracy_emit_zone_begin( (___tracy_source_location_data*)&data->loc, 1);
-
-    char*dbg = new char [128];
-    sprintf(dbg, "GoTracyZoneBegin c: %d id: %d\n", TracyCZoneCtxCounter, data->ctx.id);
-    GoTracyMessageL(dbg);
     return TracyCZoneCtxCounter;
 }
 
-void GoTracyZoneEnd(const char *c){
+void GoTracyZoneEnd(int c){
+    if (!IsZoneContextExist(c))
+    {
+        return;
+    }
 
-    char*dbg2 = new char [128];
-    sprintf(dbg2, "GoTracyZoneEnd1 c: %s\n", c);
-    GoTracyMessageL(dbg2);
-
-    std::string czone = std::string(c);
-    if(!IsZoneContextExist(czone))
-        {
-            char*dbg3 = new char [128];
-            sprintf(dbg3, "GoTracyZoneEnd3 not exist c: %s\n",  c);
-            GoTracyMessageL(dbg3);
-        }
-    TracyZoneData *data = GetZoneContext(czone);
-
-    char*dbg = new char [128];
-    sprintf(dbg, "GoTracyZoneEnd2 c: %s id: %d\n",  c, data->ctx.id);
-    GoTracyMessageL(dbg);
+    TracyZoneData *data = GetZoneContext(c);
 
     ___tracy_emit_zone_end(data->ctx);
 
     DelZoneContext(c);
 }
 
-void GoTracyZoneValue(const char* c, uint64_t value){
-    TracyZoneData *data = GetZoneContext(std::string(c));
+void GoTracyZoneValue(int c, uint64_t value){
+    TracyZoneData *data = GetZoneContext(c);
     ___tracy_emit_zone_value(data->ctx, value);
 }
 
-void GoTracyZoneText(const char* c, char* text){
-    TracyZoneData *data = GetZoneContext(std::string(c));
+void GoTracyZoneText(int c, char* text){
+    TracyZoneData *data = GetZoneContext(c);
     ___tracy_emit_zone_text(data->ctx, text, strlen(text));
 }
 

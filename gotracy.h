@@ -12,9 +12,9 @@ extern "C"
 void GoTracySetThreadName(const char*name);
 
 int GoTracyZoneBegin(const char*name,const char *function,const char*file, uint32_t line, uint32_t color);
-void GoTracyZoneEnd(const char* c);
-void GoTracyZoneValue(const char* c, uint64_t value);
-void GoTracyZoneText(const char* c, char* text);
+void GoTracyZoneEnd(int c);
+void GoTracyZoneValue(int c, uint64_t value);
+void GoTracyZoneText(int c, char* text);
 
 void GoTracyMessageL(char * msg);
 void GoTracyMessageLC(char * msg, uint32_t color);
