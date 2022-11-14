@@ -1,4 +1,4 @@
-module github.com/grzes_l/gotracy
+module github.com/grzesl/gotracy
 
 go 1.19
 
