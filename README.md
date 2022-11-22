@@ -79,7 +79,8 @@ Example output is similar to:
     func TracyMessageAppinfo(name string) 
 
 # Other screenshots
-![Tracy](/images/tracy_sin.png)
+![Tracy Sinus](/images/tracy_sin.png)
+![Tracy Memory](/images/tracy_memory.png)
 
 # License 
 Library is MIT licensed

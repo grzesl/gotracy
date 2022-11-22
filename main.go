@@ -19,7 +19,6 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/enriquebris/goconcurrentqueue"
 	"github.com/undefinedlabs/go-mpatch"
 )
 
@@ -321,8 +320,6 @@ type MemTraceItem struct {
 	Size int64
 }
 
-var memTraceQueue goconcurrentqueue.Queue
-
 var memTraceSlice []MemTraceItem
 
 var memTraceAllocSlice []MemTraceItem
@@ -486,5 +483,4 @@ func TracyInit() {
 func main() {
 	TracyInit()
 	mainTestProgram()
-}
-*/
+}*/
