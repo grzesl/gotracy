@@ -29,6 +29,11 @@ void GoTracyPlotDoublet(char *name, double val);
 void GoTracyPlotInt(char *name, int val);
 void GoTracyMessageAppinfo(char *info);
 
+void GoTracyMemoryAlloc(unsigned long long ptr, size_t size, int secure );
+void GoTracyMemoryAllocNamed( unsigned long long ptr, size_t size, int secure, const char* name);
+void GoTracyMemoryFree(unsigned long long ptr, int secure );
+void GoTracyMemoryFreeNamed(unsigned long longptr, int secure, const char* name );
+
 #ifdef __cplusplus
 }
 #endif

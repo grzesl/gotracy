@@ -1,5 +1,3 @@
-#define TRACY_ENABLE
-
 #include "tracy/TracyC.h"
 #include "gotracy.h"
 #include <map>
@@ -145,5 +143,32 @@ void GoTracyPlotInt(char *name, int val)
 void GoTracyMessageAppinfo(char *info)
 {
     ___tracy_emit_message_appinfo(info, strlen(info));
+}
+
+/*
+TRACY_API void ___tracy_emit_memory_alloc( const void* ptr, size_t size, int secure );
+TRACY_API void ___tracy_emit_memory_alloc_callstack( const void* ptr, size_t size, int depth, int secure );
+TRACY_API void ___tracy_emit_memory_free( const void* ptr, int secure );
+TRACY_API void ___tracy_emit_memory_free_callstack( const void* ptr, int depth, int secure );
+TRACY_API void ___tracy_emit_memory_alloc_named( const void* ptr, size_t size, int secure, const char* name );
+TRACY_API void ___tracy_emit_memory_alloc_callstack_named( const void* ptr, size_t size, int depth, int secure, const char* name );
+TRACY_API void ___tracy_emit_memory_free_named( const void* ptr, int secure, const char* name );
+TRACY_API void ___tracy_emit_memory_free_callstack_named( const void* ptr, int depth, int secure, const char* name );
+*/
+
+void GoTracyMemoryAlloc(unsigned long long ptr, size_t size, int secure ){
+    ___tracy_emit_memory_alloc((void*)ptr, size, secure);
+}
+
+void GoTracyMemoryAllocNamed(unsigned long long ptr, size_t size, int secure, const char* name){
+    ___tracy_emit_memory_alloc_named((void*)ptr, size, secure, name);
+}
+
+void GoTracyMemoryFree(unsigned long long ptr, int secure ){
+    ___tracy_emit_memory_free((void*)ptr, secure);
+}
+
+void GoTracyMemoryFreeNamed(unsigned long long ptr, int secure, const char* name ){
+    ___tracy_emit_memory_free_named((void*)ptr, secure, name);
 }
 

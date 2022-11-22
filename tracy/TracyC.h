@@ -1,9 +1,6 @@
 #ifndef __TRACYC_HPP__
 #define __TRACYC_HPP__
 
-#define TRACY_API
-#define TRACY_ENABLE
-
 #include <stddef.h>
 #include <stdint.h>
 
