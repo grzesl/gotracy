@@ -51,6 +51,7 @@ https://jmeubank.github.io/tdm-gcc/download/
     }
 
     func main() {
+        gotracy.TracyInit()
         exampleFunction()
     }
 
